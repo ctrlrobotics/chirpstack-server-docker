@@ -17,15 +17,11 @@ services:
       - POSTGRESQL_HOST=postgres
     ports:
       - 8080:8080
-
-  chirpstack-rest-api:
-    image: chirpstack/chirpstack-rest-api:4
-    restart: unless-stopped
-    command: --server chirpstack:8080 --bind 0.0.0.0:8090 --insecure
-    ports:
-      - 8090:8090
-    depends_on:
-      - chirpstack
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "2"
 
   postgres:
     image: postgres:14-alpine
@@ -35,6 +31,11 @@ services:
       - postgresqldata:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=root
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
 
   redis:
     image: redis:7-alpine
@@ -42,6 +43,11 @@ services:
     command: redis-server --save 300 1 --save 60 100 --appendonly no
     volumes:
       - redisdata:/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
 
 volumes:
   postgresqldata:
